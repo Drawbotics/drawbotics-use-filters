@@ -23,7 +23,7 @@ export function useFilters<Filters extends Record<string, any>>(
     (memo, key) => ({
       ...memo,
       [key]: {
-        value: urlValues[key],
+        value: urlValues[key] ?? null,
         values: Array.isArray(urlValues[key])
           ? urlValues[key].filter(Boolean)
           : [urlValues[key]].filter(Boolean),

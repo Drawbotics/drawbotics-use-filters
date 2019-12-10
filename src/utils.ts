@@ -12,10 +12,10 @@ function _switchFilterKey(key: string): string {
   return `filter[${key}]`;
 }
 
-function _updateSearch(search: Search, values: Record<string, Array<string> | string | null>) {
+function _updateSearch(search: Search, values: { [key: string]: Array<string> | string | null }) {
   const existingValues = qs.parse(search, { arrayFormat: 'comma' });
 
-  const finalValues = mergeWith(existingValues, values, (_, src: Array<string> | string | null) => {
+  const finalValues = mergeWith(existingValues, values, (_, src: Array<string> | string) => {
     return Array.isArray(src) ? src : undefined;
   });
 
