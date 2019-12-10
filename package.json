@@ -1,0 +1,10 @@
+{
+  "name": "drawbotics-use-filter",
+  "version": "1.0.0",
+  "description": "Hook to manage filters and keep them in sync with the url",
+  "license": "UNLICENSED",
+  "main": "dist/index.js",
+  "scripts": {
+    "start:watch": "tsc -w"
+  }
+}
