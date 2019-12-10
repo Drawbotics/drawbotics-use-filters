@@ -1,5 +1,5 @@
 {
-  "name": "@drawbotics/use-filter",
+  "name": "@drawbotics/use-filters",
   "version": "1.0.0",
   "description": "Hook to manage filters and keep them in sync with the url",
   "license": "UNLICENSED",
