@@ -12,7 +12,7 @@ function _switchFilterKey(key: string): string {
   return `filter[${key}]`;
 }
 
-function _updateSearch(search: Search, values: Record<string, string | null>) {
+function _updateSearch(search: Search, values: Record<string, Array<string> | string | null>) {
   const existingValues = qs.parse(search, { arrayFormat: 'comma' });
 
   const finalValues = mergeWith(existingValues, values, (_, src: Array<string> | string | null) => {
@@ -40,7 +40,11 @@ export function readUrl<T>(history: History): Partial<T> {
   );
 }
 
-export function setUrlValue<Filters>(history: History, key: keyof Filters, value: string | null) {
+export function setUrlValue<Filters>(
+  history: History,
+  key: keyof Filters,
+  value: Array<string> | string | null,
+): void {
   const newValue = { [_switchFilterKey(key as string)]: value };
   const newSearch = _updateSearch(history.location.search, newValue);
 
