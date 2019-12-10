@@ -37,7 +37,7 @@ console.log(filterKey.values); // => [filterValue]
 filterKey.set('newValue');
 ```
 
-## JavaScript
+### JavaScript
 
 ```jsx
 import { useFilters } from '@drawbotics/use-filters';
