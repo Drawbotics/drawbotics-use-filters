@@ -3,6 +3,7 @@ import qs from 'query-string';
 import mergeWith from 'lodash/mergeWith';
 import omitBy from 'lodash/omitBy';
 import { navigate } from './use-filters';
+import History from 'history';
 
 function _switchFilterKey(key: string): string {
   if (key.includes('filter[')) {
@@ -28,7 +29,7 @@ function _updateSearch(search: Search, values: { [key: string]: Array<string> | 
   );
 }
 
-export function readUrl<T>(location: Location): Partial<T> {
+export function readUrl<T>(location: History.Location): Partial<T> {
   const { search } = location;
   const urlValues = qs.parse(search, { arrayFormat: 'comma' });
 
@@ -42,7 +43,7 @@ export function readUrl<T>(location: Location): Partial<T> {
 }
 
 export function setUrlValue<Filters>(
-  location: Location,
+  location: History.Location,
   navigate: navigate,
   key: keyof Filters,
   value: Array<string> | string | null,
