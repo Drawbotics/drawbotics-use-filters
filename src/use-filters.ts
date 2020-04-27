@@ -1,4 +1,3 @@
-import { History } from 'history';
 import { readUrl, setUrlValue } from './utils';
 
 export interface Filter<FilterValue> {
@@ -7,15 +6,18 @@ export interface Filter<FilterValue> {
   readonly set: (value: FilterValue | null) => void;
 }
 
+export type navigate = (to: any, options?: any) => void;
+
 export function useFilters<Filters extends Record<string, any>>(
-  history: History,
+  location: Location,
+  navigate: navigate,
   keys: Array<keyof Filters>,
   onChange?: (key: keyof Filters, value: string | null) => void,
 ): { [Key in keyof Filters]: Filter<Filters[Key]> } {
-  const urlValues = readUrl<Filters>(history);
+  const urlValues = readUrl<Filters>(location);
 
   const setFilter = (key: keyof Filters, value: string | null): void => {
-    setUrlValue(history, key, value);
+    setUrlValue(location, navigate, key, value);
     onChange?.(key, value);
   };
 
