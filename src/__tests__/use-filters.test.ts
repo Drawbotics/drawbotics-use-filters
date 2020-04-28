@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { Location } from 'history';
+import History from 'history';
 
 import { useFilters, navigate } from '../use-filters';
 
@@ -14,7 +13,7 @@ describe('drawbotics-use-filter/use-filters.ts', () => {
       } as Location;
     });
 
-    navigate = (to: Location) => Object.assign(location, to);
+    navigate = (to: History.Location) => Object.assign(location, to);
 
     it('returns an object with the specified keys', () => {
       const result = useFilters(location, navigate, ['filterKey', 'filterKey2']);

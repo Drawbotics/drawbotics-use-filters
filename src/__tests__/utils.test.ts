@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Location } from 'history';
 
 import { readUrl, setUrlValue } from '../utils';

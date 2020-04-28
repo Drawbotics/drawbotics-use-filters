@@ -7,7 +7,7 @@ export interface Filter<FilterValue> {
   readonly set: (value: FilterValue | null) => void;
 }
 
-export type navigate = (to: any, options?: any) => void;
+export type navigate = (to: string | History.Location, options?: { relpace: Boolean }) => void;
 
 export function useFilters<Filters extends Record<string, any>>(
   location: History.Location,
