@@ -1,10 +1,12 @@
 {
   "name": "@drawbotics/use-filters",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "description": "Hook to manage filters and keep them in sync with the url",
   "license": "UNLICENSED",
   "main": "dist/index.js",
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Drawbotics/drawbotics-use-filters"
@@ -15,7 +17,7 @@
     "build:watch": "tsc -w",
     "test": "jest",
     "test:watch": "jest --watch",
-    "prepublishOnly": "npm run clean && npm run build",
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "husky": {
     "hooks": {
