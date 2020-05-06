@@ -7,11 +7,11 @@ export interface Filter<FilterValue> {
   readonly set: (value: FilterValue | null) => void;
 }
 
-export type navigate = (to: string | History.Location, options?: { replace: Boolean }) => void;
+export type Navigate = (to: History.Location, options?: { replace: boolean }) => void;
 
 export function useFilters<Filters extends Record<string, any>>(
   location: History.Location,
-  navigate: navigate,
+  navigate: Navigate,
   keys: Array<keyof Filters>,
   onChange?: (key: keyof Filters, value: string | null) => void,
 ): { [Key in keyof Filters]: Filter<Filters[Key]> } {
