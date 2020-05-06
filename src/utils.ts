@@ -52,6 +52,6 @@ export function setUrlValue<Filters>(
   const newSearch = _updateSearch(location.search, newValue);
 
   if (location.search.replace('?', '') !== newSearch) {
-    navigate({ ...location, search: newSearch });
+    navigate({ ...location, search: '?' + newSearch });
   }
 }
