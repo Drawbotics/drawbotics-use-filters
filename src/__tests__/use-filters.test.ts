@@ -1,16 +1,17 @@
 import History from 'history';
 
-import { useFilters, navigate } from '../use-filters';
+import { useFilters, Navigate } from '../use-filters';
 
 describe('drawbotics-use-filter/use-filters.ts', () => {
   describe('useFilters', () => {
-    let location: Location;
-    let navigate: navigate;
+    let location: History.Location;
+    let navigate: Navigate;
 
     beforeEach(() => {
       location = {
         search: '',
-      } as Location;
+        pathname: '',
+      } as History.Location;
     });
 
     navigate = (to: History.Location) => Object.assign(location, to);

@@ -2,7 +2,7 @@ import { Search } from 'history';
 import qs from 'query-string';
 import mergeWith from 'lodash/mergeWith';
 import omitBy from 'lodash/omitBy';
-import { navigate } from './use-filters';
+import { Navigate } from './use-filters';
 import History from 'history';
 
 function _switchFilterKey(key: string): string {
@@ -44,7 +44,7 @@ export function readUrl<T>(location: History.Location): Partial<T> {
 
 export function setUrlValue<Filters>(
   location: History.Location,
-  navigate: navigate,
+  navigate: Navigate,
   key: keyof Filters,
   value: Array<string> | string | null,
 ): void {
