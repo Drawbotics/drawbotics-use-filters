@@ -22,6 +22,7 @@ interface Filters {
 
 // ... inside a component ...
 const { filterKey, filterKey2 } = useFilter<Filters>(
+  location,
   history,
   ['filterKey', 'filterKey2'],
   (key, value) => `Updated ${key} with ${value}`,
@@ -44,6 +45,7 @@ import { useFilters } from '@drawbotics/use-filters';
 
 // ... inside a component ...
 const { filterKey, filterKey2 } = useFilter(
+  location,
   history,
   ['filterKey', 'filterKey2'],
   (key, value) => `Updated ${key} with ${value}`,
