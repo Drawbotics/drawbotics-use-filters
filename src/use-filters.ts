@@ -18,7 +18,7 @@ export function useFilters<Filters extends Record<string, any>>(
   const urlValues = readUrl<Filters>(location);
 
   const setFilter = (key: keyof Filters, value: string | null): void => {
-    setUrlValue(location, navigate, key, value);
+    setUrlValue(location, navigate, key, value == null ? null : encodeURIComponent(value));
     onChange?.(key, value);
   };
 
@@ -26,10 +26,27 @@ export function useFilters<Filters extends Record<string, any>>(
     (memo, key) => ({
       ...memo,
       [key]: {
-        value: urlValues[key] ?? null,
-        values: Array.isArray(urlValues[key])
+        value: urlValues[key]
+          ? Array.isArray(urlValues[key])
+            ? urlValues[key].map((value: unknown) => {
+                if (typeof value === 'string') {
+                  return decodeURIComponent(value);
+                } else {
+                  return value;
+                }
+              })
+            : decodeURIComponent(urlValues[key] as string)
+          : null,
+        values: (Array.isArray(urlValues[key])
           ? urlValues[key].filter(Boolean)
-          : [urlValues[key]].filter(Boolean),
+          : [urlValues[key]].filter(Boolean)
+        ).map((value: unknown) => {
+          if (typeof value === 'string') {
+            return decodeURIComponent(value);
+          } else {
+            return value;
+          }
+        }),
         set: (value: unknown) => setFilter(key, value as string | null),
       },
     }),

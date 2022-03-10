@@ -72,5 +72,17 @@ describe('drawbotics-use-filter/use-filters.ts', () => {
       expect(spy.mock.calls[0][0]).toEqual('filterKey');
       expect(spy.mock.calls[0][1]).toEqual(['filterValue', 'filterValue2']);
     });
+
+    it('encodes the value to URI acceptable symbols', () => {
+      let result = useFilters(location, navigate, ['filterKey']);
+      result.filterKey.set('+351');
+      expect(location.search).toEqual('?filter[filterKey]=%2B351');
+    });
+
+    it('decodes URI symbols into their original characters', () => {
+      location.search = '?filter[filterKey]=%2B351';
+      const result = useFilters(location, navigate, ['filterKey']);
+      expect(result.filterKey.value).toEqual('+351');
+    });
   });
 });
