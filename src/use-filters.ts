@@ -3,7 +3,7 @@ import { setUrlValue } from './utils';
 
 export interface Filter {
   readonly value: string | null;
-  readonly values: Array<string | null>;
+  readonly values: Array<string>;
   readonly set: (value: string | string[] | null) => void;
 }
 
