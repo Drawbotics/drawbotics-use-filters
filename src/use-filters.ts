@@ -2,8 +2,8 @@ import History from 'history';
 import { setUrlValue } from './utils';
 
 export interface Filter {
-  readonly value: string | null;
-  readonly values: Array<string>;
+  readonly value: string | undefined;
+  readonly values: Array<string> | undefined;
   readonly set: (value: string | string[] | null) => void;
 }
 
@@ -19,11 +19,13 @@ export function useFilters<Keys extends string>(
   return keys.reduce((memo, k) => {
     const key = k as Keys;
 
+    const allValues = urlSearchParams.getAll(key);
+
     return {
       ...memo,
       [key]: {
-        value: urlSearchParams.get(key),
-        values: urlSearchParams.getAll(key),
+        value: urlSearchParams.get(key) ?? undefined,
+        values: allValues.length === 0 ? undefined : allValues,
         set: (value: string | string[] | null) => {
           if (Array.isArray(value)) {
             urlSearchParams.delete(key);
