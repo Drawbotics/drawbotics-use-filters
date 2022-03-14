@@ -1,55 +1,47 @@
-import { readUrl, setUrlValue } from './utils';
 import History from 'history';
+import { setUrlValue } from './utils';
 
-export interface Filter<FilterValue> {
-  readonly value?: FilterValue | null;
-  readonly values?: Array<FilterValue | null>;
-  readonly set: (value: FilterValue | null) => void;
+export interface Filter {
+  readonly value: string | undefined;
+  readonly values: Array<string> | undefined;
+  readonly set: (value: string | string[] | null) => void;
 }
 
 export type Navigate = (to: History.Location, options?: { replace: boolean }) => void;
 
-export function useFilters<Filters extends Record<string, any>>(
+export function useFilters<Keys extends string>(
   location: History.Location,
   navigate: Navigate,
-  keys: Array<keyof Filters>,
-  onChange?: (key: keyof Filters, value: string | null) => void,
-): { [Key in keyof Filters]: Filter<Filters[Key]> } {
-  const urlValues = readUrl<Filters>(location);
+  keys: Array<Keys>,
+): { [K in Keys]: Filter } {
+  const urlSearchParams = new URLSearchParams(location.search);
 
-  const setFilter = (key: keyof Filters, value: string | null): void => {
-    setUrlValue(location, navigate, key, value == null ? null : encodeURIComponent(value));
-    onChange?.(key, value);
-  };
+  return keys.reduce((memo, k) => {
+    const key = k as Keys;
 
-  return keys.reduce(
-    (memo, key) => ({
+    const allValues = urlSearchParams.getAll(key);
+
+    return {
       ...memo,
       [key]: {
-        value: urlValues[key]
-          ? Array.isArray(urlValues[key])
-            ? urlValues[key].map((value: unknown) => {
-                if (typeof value === 'string') {
-                  return decodeURIComponent(value);
-                } else {
-                  return value;
-                }
-              })
-            : decodeURIComponent(urlValues[key] as string)
-          : null,
-        values: (Array.isArray(urlValues[key])
-          ? urlValues[key].filter(Boolean)
-          : [urlValues[key]].filter(Boolean)
-        ).map((value: unknown) => {
-          if (typeof value === 'string') {
-            return decodeURIComponent(value);
+        value: urlSearchParams.get(key) ?? undefined,
+        values: allValues.length === 0 ? undefined : allValues,
+        set: (value: string | string[] | null) => {
+          if (Array.isArray(value)) {
+            urlSearchParams.delete(key);
+
+            for (const v of value) {
+              urlSearchParams.append(key, v);
+            }
+          } else if (value == null) {
+            urlSearchParams.delete(key);
           } else {
-            return value;
+            urlSearchParams.set(key, value);
           }
-        }),
-        set: (value: unknown) => setFilter(key, value as string | null),
+
+          setUrlValue(location, navigate, urlSearchParams.toString());
+        },
       },
-    }),
-    {} as { [Key in keyof Filters]: Filter<Filters[Key]> },
-  );
+    };
+  }, {} as { [K in Keys]: Filter });
 }

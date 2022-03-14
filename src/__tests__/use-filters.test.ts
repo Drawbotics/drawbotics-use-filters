@@ -23,19 +23,19 @@ describe('drawbotics-use-filter/use-filters.ts', () => {
     });
 
     it('reads string values from the url that match the specified keys', () => {
-      location.search = '?filter[filterKey]=filterValue';
+      location.search = '?filterKey=filterValue';
       const result = useFilters(location, navigate, ['filterKey']);
       expect(result.filterKey.value).toEqual('filterValue');
     });
 
     it('reads array values from the url that match the specified keys', () => {
-      location.search = '?filter[filterKey]=filterValue1,filterValue2';
+      location.search = '?filterKey=filterValue1&filterKey=filterValue2';
       const result = useFilters(location, navigate, ['filterKey']);
-      expect(result.filterKey.value).toEqual(['filterValue1', 'filterValue2']);
+      expect(result.filterKey.values).toEqual(['filterValue1', 'filterValue2']);
     });
 
     it('ignores values in the url that do not match the specified keys', () => {
-      location.search = '?filter[filterKey2]=filterValue1';
+      location.search = '?filterKey2=filterValue1';
       const result = useFilters(location, navigate, ['filterKey']);
       expect(result.filterKey.value).toBeNull();
     });
@@ -57,30 +57,24 @@ describe('drawbotics-use-filter/use-filters.ts', () => {
     it('deletes a value when passing null', () => {
       let result = useFilters(location, navigate, ['filterKey']);
       result.filterKey.set(['filterValue', 'filterValue2']);
+
       result = useFilters(location, navigate, ['filterKey']);
-      expect(result.filterKey.value).toEqual(['filterValue', 'filterValue2']);
+      expect(result.filterKey.values).toEqual(['filterValue', 'filterValue2']);
+
       result.filterKey.set(null);
       result = useFilters(location, navigate, ['filterKey']);
       expect(result.filterKey.value).toBeNull();
-    });
-
-    it('calls the callback when a value changes with the key and the value', () => {
-      const spy = jest.fn();
-      const result = useFilters(location, navigate, ['filterKey'], spy);
-      result.filterKey.set(['filterValue', 'filterValue2']);
-      expect(spy.mock.calls.length).toEqual(1);
-      expect(spy.mock.calls[0][0]).toEqual('filterKey');
-      expect(spy.mock.calls[0][1]).toEqual(['filterValue', 'filterValue2']);
+      expect(result.filterKey.values?.length).toBe(0);
     });
 
     it('encodes the value to URI acceptable symbols', () => {
       let result = useFilters(location, navigate, ['filterKey']);
       result.filterKey.set('+351');
-      expect(location.search).toEqual('?filter[filterKey]=%2B351');
+      expect(location.search).toEqual('?filterKey=%2B351');
     });
 
     it('decodes URI symbols into their original characters', () => {
-      location.search = '?filter[filterKey]=%2B351';
+      location.search = '?filterKey=%2B351';
       const result = useFilters(location, navigate, ['filterKey']);
       expect(result.filterKey.value).toEqual('+351');
     });
