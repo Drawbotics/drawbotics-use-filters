@@ -37,7 +37,7 @@ describe('drawbotics-use-filter/use-filters.ts', () => {
     it('ignores values in the url that do not match the specified keys', () => {
       location.search = '?filterKey2=filterValue1';
       const result = useFilters(location, navigate, ['filterKey']);
-      expect(result.filterKey.value).toBeNull();
+      expect(result.filterKey.value).toBe(undefined);
     });
 
     it('sets a string value', () => {
@@ -63,8 +63,8 @@ describe('drawbotics-use-filter/use-filters.ts', () => {
 
       result.filterKey.set(null);
       result = useFilters(location, navigate, ['filterKey']);
-      expect(result.filterKey.value).toBeNull();
-      expect(result.filterKey.values?.length).toBe(0);
+      expect(result.filterKey.value).toBe(undefined);
+      expect(result.filterKey.values).toBe(undefined);
     });
 
     it('encodes the value to URI acceptable symbols', () => {
