@@ -1,11 +1,7 @@
 import History from 'history';
-import { setUrlValue } from './utils';
-
-export interface Filter {
-  readonly value: string | undefined;
-  readonly values: Array<string> | undefined;
-  readonly set: (value: string | string[] | null) => void;
-}
+import { useEffect, useState } from 'react';
+import { Filter } from './types';
+import { setUrlValue, toFilters } from './utils';
 
 export type Navigate = (to: History.Location, options?: { replace: boolean }) => void;
 
@@ -13,35 +9,51 @@ export function useFilters<Keys extends string>(
   location: History.Location,
   navigate: Navigate,
   keys: Array<Keys>,
+  options?: {
+    persistenceKey: string;
+  },
 ): { [K in Keys]: Filter } {
-  const urlSearchParams = new URLSearchParams(location.search);
+  const [filtersWereRestored, setFiltersWereRestored] = useState(false);
 
-  return keys.reduce((memo, k) => {
-    const key = k as Keys;
+  useEffect(() => {
+    if (options?.persistenceKey) {
+      const urlSearchParams = new URLSearchParams(location.search);
 
-    const allValues = urlSearchParams.getAll(key);
+      const toPersist = {} as { [key: string]: string[] };
+      for (const key of keys) {
+        const values = urlSearchParams.getAll(key);
 
-    return {
-      ...memo,
-      [key]: {
-        value: urlSearchParams.get(key) ?? undefined,
-        values: allValues.length === 0 ? undefined : allValues,
-        set: (value: string | string[] | null) => {
-          if (Array.isArray(value)) {
-            urlSearchParams.delete(key);
+        toPersist[key] = values;
+      }
 
-            for (const v of value) {
-              urlSearchParams.append(key, v);
-            }
-          } else if (value == null) {
-            urlSearchParams.delete(key);
-          } else {
-            urlSearchParams.set(key, value);
-          }
+      localStorage.setItem(options.persistenceKey, JSON.stringify(toPersist));
+    }
+  }, [location.search]);
 
-          setUrlValue(location, navigate, urlSearchParams.toString());
-        },
-      },
-    };
-  }, {} as { [K in Keys]: Filter });
+  if (options?.persistenceKey && !filtersWereRestored && location.search.includes('=')) {
+    const previousFiltersSerialized = localStorage.getItem(options.persistenceKey);
+    const previousFilters = (
+      previousFiltersSerialized ? JSON.parse(previousFiltersSerialized) : {}
+    ) as { [key: string]: string[] };
+
+    const restoredUrlSearchParams = new URLSearchParams();
+    Object.keys(keys).forEach((key) => {
+      const values = previousFilters[key];
+
+      for (const value of values) {
+        restoredUrlSearchParams.append(key, value);
+      }
+    });
+
+    // https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops
+    setFiltersWereRestored(true);
+
+    setUrlValue(location, navigate, restoredUrlSearchParams.toString());
+
+    return toFilters(location, navigate, keys, restoredUrlSearchParams);
+  } else {
+    const urlSearchParams = new URLSearchParams(location.search);
+
+    return toFilters(location, navigate, keys, urlSearchParams);
+  }
 }
