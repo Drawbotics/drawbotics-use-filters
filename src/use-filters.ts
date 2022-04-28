@@ -18,16 +18,7 @@ export function useFilters<Keys extends string>(
 
   useEffect(() => {
     if (options?.persistenceKey && location.search.includes('=')) {
-      const urlSearchParams = new URLSearchParams(location.search);
-
-      const toPersist = {} as { [key: string]: string[] };
-      for (const key of keys) {
-        const values = urlSearchParams.getAll(key);
-
-        toPersist[key] = values;
-      }
-
-      localStorage.setItem(options.persistenceKey, JSON.stringify(toPersist));
+      localStorage.setItem(options.persistenceKey, location.search);
     }
   }, [location.search]);
 
@@ -42,21 +33,9 @@ export function useFilters<Keys extends string>(
   }, [queryStringToRestore]);
 
   if (options?.persistenceKey && !filtersWereRestored && !location.search.includes('=')) {
-    const previousFiltersSerialized = localStorage.getItem(options.persistenceKey);
-    const previousFilters = (
-      previousFiltersSerialized ? JSON.parse(previousFiltersSerialized) : {}
-    ) as { [key: string]: string[] };
+    const previousLocationSearch = localStorage.getItem(options.persistenceKey) || '';
 
-    const restoredUrlSearchParams = new URLSearchParams();
-    for (const key of keys) {
-      const values = previousFilters[key];
-
-      if (values) {
-        for (const value of values) {
-          restoredUrlSearchParams.append(key, value);
-        }
-      }
-    }
+    const restoredUrlSearchParams = new URLSearchParams(previousLocationSearch);
 
     // https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops
     setFiltersWereRestored(true);
