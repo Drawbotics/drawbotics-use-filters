@@ -1,6 +1,6 @@
 {
   "name": "@drawbotics/use-filters",
-  "version": "3.1.2",
+  "version": "3.1.3",
   "description": "Hook to manage filters and keep them in sync with the url",
   "license": "UNLICENSED",
   "main": "dist/index.js",

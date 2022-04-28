@@ -16,7 +16,7 @@ export function useFilters<Keys extends string>(
   const [filtersWereRestored, setFiltersWereRestored] = useState(false);
 
   useEffect(() => {
-    if (options?.persistenceKey) {
+    if (options?.persistenceKey && location.search.includes('=')) {
       const urlSearchParams = new URLSearchParams(location.search);
 
       const toPersist = {} as { [key: string]: string[] };
