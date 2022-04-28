@@ -30,7 +30,7 @@ export function useFilters<Keys extends string>(
     }
   }, [location.search]);
 
-  if (options?.persistenceKey && !filtersWereRestored && location.search.includes('=')) {
+  if (options?.persistenceKey && !filtersWereRestored && !location.search.includes('=')) {
     const previousFiltersSerialized = localStorage.getItem(options.persistenceKey);
     const previousFilters = (
       previousFiltersSerialized ? JSON.parse(previousFiltersSerialized) : {}
