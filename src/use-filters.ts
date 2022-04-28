@@ -37,13 +37,15 @@ export function useFilters<Keys extends string>(
     ) as { [key: string]: string[] };
 
     const restoredUrlSearchParams = new URLSearchParams();
-    Object.keys(keys).forEach((key) => {
+    for (const key of keys) {
       const values = previousFilters[key];
 
-      for (const value of values) {
-        restoredUrlSearchParams.append(key, value);
+      if (values) {
+        for (const value of values) {
+          restoredUrlSearchParams.append(key, value);
+        }
       }
-    });
+    }
 
     // https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops
     setFiltersWereRestored(true);
