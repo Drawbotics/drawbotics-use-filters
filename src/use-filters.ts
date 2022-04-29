@@ -1,5 +1,5 @@
 import History from 'history';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { Filter } from './types';
 import { setUrlValue, toFilters } from './utils';
 
@@ -22,30 +22,29 @@ export function useFilters<Keys extends string>(
     }
   }, [location.search]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     /*
       navigate method in React Router can only be called after the page page component finished rendering
       or the instruction will be ignored 
     */
     if (queryStringToRestore != null) {
       setUrlValue(location, navigate, queryStringToRestore);
+      setQueryStringToRestore(undefined);
     }
   }, [queryStringToRestore]);
 
-  if (options?.persistenceKey && !filtersWereRestored && !location.search.includes('=')) {
-    const previousLocationSearch = localStorage.getItem(options.persistenceKey) || '';
+  const locationSearch =
+    options?.persistenceKey && !filtersWereRestored && !location.search.includes('=')
+      ? localStorage.getItem(options.persistenceKey) || ''
+      : location.search;
 
-    const restoredUrlSearchParams = new URLSearchParams(previousLocationSearch);
+  const urlSearchParams = new URLSearchParams(locationSearch);
 
-    // https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops
+  if (!filtersWereRestored) {
+    setQueryStringToRestore(urlSearchParams.toString());
+
     setFiltersWereRestored(true);
-
-    setQueryStringToRestore(restoredUrlSearchParams.toString());
-
-    return toFilters(location, navigate, keys, restoredUrlSearchParams);
-  } else {
-    const urlSearchParams = new URLSearchParams(location.search);
-
-    return toFilters(location, navigate, keys, urlSearchParams);
   }
+
+  return toFilters(location, navigate, keys, urlSearchParams);
 }
