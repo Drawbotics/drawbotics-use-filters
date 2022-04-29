@@ -13,8 +13,8 @@ export function useFilters<Keys extends string>(
     persistenceKey: string;
   },
 ): { [K in Keys]: Filter } {
-  const [filtersWereRestored, setFiltersWereRestored] = useState(false);
   const [queryStringToRestore, setQueryStringToRestore] = useState<string | undefined>();
+  const [queryStringWasRestored, setQueryStringWasRestored] = useState(false);
 
   useEffect(() => {
     if (options?.persistenceKey && location.search.includes('=')) {
@@ -27,23 +27,21 @@ export function useFilters<Keys extends string>(
       navigate method in React Router can only be called after the page page component finished rendering
       or the instruction will be ignored 
     */
-    if (queryStringToRestore != null) {
+    if (queryStringToRestore != null && !queryStringWasRestored) {
       setUrlValue(location, navigate, queryStringToRestore);
-      setQueryStringToRestore(undefined);
+      setQueryStringWasRestored(true);
     }
   }, [queryStringToRestore]);
 
   const locationSearch =
-    options?.persistenceKey && !filtersWereRestored && !location.search.includes('=')
+    options?.persistenceKey && !location.search.includes('=')
       ? localStorage.getItem(options.persistenceKey) || ''
       : location.search;
 
   const urlSearchParams = new URLSearchParams(locationSearch);
 
-  if (!filtersWereRestored) {
+  if (queryStringToRestore != null) {
     setQueryStringToRestore(urlSearchParams.toString());
-
-    setFiltersWereRestored(true);
   }
 
   return toFilters(location, navigate, keys, urlSearchParams);
