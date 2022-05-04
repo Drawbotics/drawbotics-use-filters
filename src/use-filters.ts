@@ -1,11 +1,7 @@
 import History from 'history';
-import { setUrlValue } from './utils';
-
-export interface Filter {
-  readonly value: string | undefined;
-  readonly values: Array<string> | undefined;
-  readonly set: (value: string | string[] | null) => void;
-}
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { Filter } from './types';
+import { setUrlValue, toFilters } from './utils';
 
 export type Navigate = (to: History.Location, options?: { replace: boolean }) => void;
 
@@ -13,35 +9,40 @@ export function useFilters<Keys extends string>(
   location: History.Location,
   navigate: Navigate,
   keys: Array<Keys>,
+  options?: {
+    persistenceKey: string;
+  },
 ): { [K in Keys]: Filter } {
-  const urlSearchParams = new URLSearchParams(location.search);
+  const [queryStringToRestore, setQueryStringToRestore] = useState<string | undefined>();
+  const [queryStringWasRestored, setQueryStringWasRestored] = useState(false);
 
-  return keys.reduce((memo, k) => {
-    const key = k as Keys;
+  useEffect(() => {
+    if (options?.persistenceKey && location.search.includes('=')) {
+      localStorage.setItem(options.persistenceKey, location.search);
+    }
+  }, [location.search]);
 
-    const allValues = urlSearchParams.getAll(key);
+  useLayoutEffect(() => {
+    /*
+      navigate method in React Router can only be called after the page page component finished rendering
+      or the instruction will be ignored 
+    */
+    if (queryStringToRestore != null && !queryStringWasRestored) {
+      setUrlValue(location, navigate, queryStringToRestore);
+      setQueryStringWasRestored(true);
+    }
+  }, [queryStringToRestore]);
 
-    return {
-      ...memo,
-      [key]: {
-        value: urlSearchParams.get(key) ?? undefined,
-        values: allValues.length === 0 ? undefined : allValues,
-        set: (value: string | string[] | null) => {
-          if (Array.isArray(value)) {
-            urlSearchParams.delete(key);
+  const locationSearch =
+    options?.persistenceKey && !location.search.includes('=')
+      ? localStorage.getItem(options.persistenceKey) || ''
+      : location.search;
 
-            for (const v of value) {
-              urlSearchParams.append(key, v);
-            }
-          } else if (value == null) {
-            urlSearchParams.delete(key);
-          } else {
-            urlSearchParams.set(key, value);
-          }
+  const urlSearchParams = new URLSearchParams(locationSearch);
 
-          setUrlValue(location, navigate, urlSearchParams.toString());
-        },
-      },
-    };
-  }, {} as { [K in Keys]: Filter });
+  if (queryStringToRestore != null) {
+    setQueryStringToRestore(urlSearchParams.toString());
+  }
+
+  return toFilters(location, navigate, keys, urlSearchParams);
 }
