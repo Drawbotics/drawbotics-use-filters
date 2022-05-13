@@ -1,5 +1,5 @@
 import History from 'history';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Filter } from './types';
 import { setUrlValue, toFilters } from './utils';
 
@@ -17,12 +17,12 @@ export function useFilters<Keys extends string>(
   const [queryStringWasRestored, setQueryStringWasRestored] = useState(false);
 
   useEffect(() => {
-    if (options?.persistenceKey && location.search.includes('=')) {
+    if (options?.persistenceKey && queryStringWasRestored) {
       localStorage.setItem(options.persistenceKey, location.search);
     }
   }, [location.search]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     /*
       navigate method in React Router can only be called after the page page component finished rendering
       or the instruction will be ignored 
