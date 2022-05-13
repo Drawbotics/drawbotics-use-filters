@@ -1,6 +1,6 @@
 {
   "name": "@drawbotics/use-filters",
-  "version": "3.1.7",
+  "version": "3.2.0",
   "description": "Hook to manage filters and keep them in sync with the url",
   "license": "UNLICENSED",
   "main": "dist/index.js",
@@ -28,7 +28,7 @@
     "*.{ts,tsx}": "eslint --ext ts,tsx --format node_modules/eslint-formatter-pretty -c .eslintrc.js --max-warnings=0"
   },
   "peerDependencies": {
-    "history": "^4.*",
+    "history": "^5.3.0",
     "react": "^16.0.0"
   },
   "devDependencies": {
@@ -42,7 +42,7 @@
     "eslint": "^6.7.2",
     "eslint-formatter-pretty": "^3.0.1",
     "eslint-plugin-jest": "^23.1.1",
-    "history": "^4.10.1",
+    "history": "^5.3.0",
     "husky": "^3.1.0",
     "jest": "^24.9.0",
     "lint-staged": "^9.5.0",
