@@ -40,7 +40,7 @@ export function useFilters<Keys extends string>(
 
   const urlSearchParams = new URLSearchParams(locationSearch);
 
-  if (queryStringToRestore != null) {
+  if (queryStringToRestore == null) {
     setQueryStringToRestore(urlSearchParams.toString());
   }
 
